@@ -59,13 +59,20 @@
       background: var(--green-dark);
       display: flex; flex-wrap: wrap;
       border-bottom: 3px solid var(--accent);
+      position: sticky; top: 0; z-index: 100;
     }
     nav a {
       color: #d4edba; text-decoration: none; padding: 13px 18px;
       font-size: 14px; font-weight: 500; transition: background .2s, color .2s;
-      display: block;
+      display: block; cursor: pointer;
     }
-    nav a:hover, nav a.active { background: var(--accent); color: #fff; }
+    nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
+    nav a.active { background: var(--accent); color: #fff; }
+
+    /* ── PAGE SECTIONS ── */
+    .page { display: none; animation: fadeIn .25s ease; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ── HERO ── */
     .hero {
@@ -142,7 +149,7 @@
 
     /* ── CART SIDEBAR ── */
     .sidebar {}
-    .cart-box { position: sticky; top: 16px; }
+    .cart-box { position: sticky; top: 60px; }
     #cart-items { list-style: none; margin: 12px 0; max-height: 300px; overflow-y: auto; }
     #cart-items li {
       display: flex; justify-content: space-between; align-items: center;
@@ -158,10 +165,8 @@
       width: 54px; padding: 4px 6px; border: 1px solid var(--gray2);
       border-radius: 3px; font-size: 13px; text-align: center;
     }
-    .qty-unit { font-size: 12px; color: var(--text-light); }
 
     /* ── ORDER FORM ── */
-    #order { padding: 28px 0; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
@@ -193,7 +198,7 @@
     }
     .success-msg .checkmark { font-size: 40px; }
 
-    /* ── ABOUT / INFO ── */
+    /* ── INFO CARDS ── */
     .info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin-bottom: 28px; }
     .info-card {
       background: var(--white); border: 1px solid var(--gray2); border-radius: 6px;
@@ -213,12 +218,32 @@
     .admin-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
     .admin-row label { font-size: 13px; width: 120px; flex-shrink: 0; }
     .admin-row input { flex: 1; min-width: 80px; padding: 6px 10px; border: 1px solid var(--gray2); border-radius: 3px; font-size: 13px; }
-    .admin-row input.admin-stock { width: 80px; flex: none; }
+
+    /* ── CONTACT PAGE ── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 28px 0; }
+    @media (max-width: 700px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-detail-row { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+    .contact-detail-row .contact-icon { font-size: 26px; flex-shrink: 0; margin-top: 2px; }
+    .contact-detail-row h4 { font-size: 13px; color: var(--text-light); margin-bottom: 2px; font-weight: 500; }
+    .contact-detail-row p { font-size: 15px; font-weight: 600; color: var(--text); }
+    .contact-detail-row a { color: var(--green); text-decoration: none; font-weight: 700; }
+    .contact-detail-row a:hover { color: var(--green-dark); }
+    .map-placeholder {
+      background: var(--green-light); border: 2px dashed #a5d6a7;
+      border-radius: 8px; height: 220px; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 10px; text-align: center; padding: 20px;
+    }
+    .map-placeholder .map-emoji { font-size: 48px; }
+    .map-placeholder p { color: var(--text-light); font-size: 13px; }
+    .hours-table { width: 100%; font-size: 14px; }
+    .hours-table td { padding: 7px 0; border-bottom: 1px solid var(--gray2); }
+    .hours-table td:last-child { text-align: right; font-weight: 600; color: var(--green-dark); }
+    .open-badge { display: inline-block; background: var(--green); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
 
     /* ── FOOTER ── */
     footer {
       background: var(--green-dark); color: #c8e6b0;
-      padding: 32px 20px 16px; margin-top: 32px;
+      padding: 32px 20px 16px; margin-top: 0;
     }
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 24px; max-width: 1160px; margin: 0 auto 20px; }
     footer h4 { color: #fff; font-size: 15px; margin-bottom: 12px; }
@@ -237,7 +262,6 @@
     }
     .notif.show { transform: translateY(0); opacity: 1; }
 
-    .section-sep { border: none; border-top: 2px solid var(--gray2); margin: 28px 0; }
     @media (max-width: 600px) {
       .logo-area h1 { font-size: 20px; }
       .hero h2 { font-size: 22px; }
@@ -271,186 +295,195 @@
 
 <!-- NAV -->
 <nav>
-  <a href="#home" class="active">🏠 Home</a>
-  <a href="#prices">📋 Today's Prices</a>
-  <a href="#order">🛒 Order Online</a>
-  <a href="#about">ℹ️ About Us</a>
-  <a href="#contact">📞 Contact</a>
+  <a onclick="showPage('home')"   class="active"  data-page="home">🏠 Home</a>
+  <a onclick="showPage('prices')" data-page="prices">📋 Today's Prices</a>
+  <a onclick="showPage('order')"  data-page="order">🛒 Order Online</a>
+  <a onclick="showPage('about')"  data-page="about">ℹ️ About Us</a>
+  <a onclick="showPage('contact')" data-page="contact">📞 Contact</a>
 </nav>
 
-<!-- HERO -->
-<div class="hero" id="home">
-  <h2>🌾 Fresh Vegetables Delivered to You</h2>
-  <p>Get the freshest locally sourced vegetables at the best prices. Updated every day — order online and we'll deliver right to your door in Kathmandu!</p>
-  <div class="hero-btns">
-    <a href="#prices" class="btn btn-accent">📋 See Today's Prices</a>
-    <a href="#order" class="btn btn-white">🛒 Order Now</a>
+<!-- ════════════════════════════════════════
+     PAGE: HOME
+════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <div class="hero">
+    <h2>🌾 Fresh Vegetables Delivered to You</h2>
+    <p>Get the freshest locally sourced vegetables at the best prices. Updated every day — order online and we'll deliver right to your door in Kathmandu!</p>
+    <div class="hero-btns">
+      <button class="btn btn-accent" onclick="showPage('prices')">📋 See Today's Prices</button>
+      <button class="btn btn-white" onclick="showPage('order')">🛒 Order Now</button>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:28px; padding-bottom:28px;">
+    <div class="info-cards">
+      <div class="info-card">
+        <div class="icon">🥬</div>
+        <h3>100% Fresh</h3>
+        <p>Sourced directly from local farms in and around Kalimati market.</p>
+      </div>
+      <div class="info-card">
+        <div class="icon">💰</div>
+        <h3>Best Prices</h3>
+        <p>Competitive daily prices updated every morning. No hidden charges.</p>
+      </div>
+      <div class="info-card">
+        <div class="icon">🚚</div>
+        <h3>Home Delivery</h3>
+        <p>We deliver within Kathmandu Valley. Call us to confirm your area.</p>
+      </div>
+      <div class="info-card">
+        <div class="icon">📞</div>
+        <h3>Easy Ordering</h3>
+        <p>Order online or call us at <strong>9849149553</strong> anytime.</p>
+      </div>
+    </div>
+
+    <!-- Quick highlights -->
+    <div class="card" style="background:var(--green-light);border-color:#b8dfa0;">
+      <h4 style="color:var(--green-dark);margin-bottom:8px;font-size:16px;">🌱 Why Choose Dipesh Store?</h4>
+      <p style="font-size:14px;color:var(--text-light);line-height:1.9;">
+        Dipesh Store is a trusted name in Kalimati, Kathmandu — one of Nepal's busiest fresh produce markets.
+        Every morning, we handpick the finest locally grown vegetables so your family gets only the best.
+        From potatoes and tomatoes to seasonal greens, we've got it all. Visit us or order online today!
+      </p>
+    </div>
   </div>
 </div>
 
-<!-- INFO CARDS -->
-<div class="container" style="padding-top:28px;">
-  <div class="info-cards">
-    <div class="info-card">
-      <div class="icon">🥬</div>
-      <h3>100% Fresh</h3>
-      <p>Sourced directly from local farms in and around Kalimati market.</p>
-    </div>
-    <div class="info-card">
-      <div class="icon">💰</div>
-      <h3>Best Prices</h3>
-      <p>Competitive daily prices updated every morning. No hidden charges.</p>
-    </div>
-    <div class="info-card">
-      <div class="icon">🚚</div>
-      <h3>Home Delivery</h3>
-      <p>We deliver within Kathmandu Valley. Call us to confirm your area.</p>
-    </div>
-    <div class="info-card">
-      <div class="icon">📞</div>
-      <h3>Easy Ordering</h3>
-      <p>Order online or call us at <strong>9849149553</strong> anytime.</p>
+<!-- ════════════════════════════════════════
+     PAGE: TODAY'S PRICES
+════════════════════════════════════════ -->
+<div class="page" id="page-prices">
+  <div class="container">
+    <div class="main-grid">
+
+      <!-- LEFT: Table -->
+      <div>
+        <!-- ADMIN PANEL -->
+        <details class="admin-toggle">
+          <summary>🔐 Store Owner: Update Today's Prices</summary>
+          <div class="admin-form">
+            <p style="font-size:12px;color:#777;margin-bottom:12px;">Enter the price in NPR per kg. Toggle stock availability.</p>
+            <div id="admin-inputs"></div>
+            <button class="btn btn-green btn-sm" onclick="savePrices()" style="margin-top:10px;">💾 Save & Publish Prices</button>
+            <button class="btn btn-sm" style="background:#e53935;color:#fff;margin-top:10px;margin-left:8px;" onclick="resetPrices()">↺ Reset to Default</button>
+          </div>
+        </details>
+
+        <div class="card">
+          <h2 class="section-title">📋 Today's Market Prices</h2>
+          <div class="price-date">
+            <span id="today-date">Loading...</span>
+            <span class="live-badge">LIVE</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price (NPR/kg)</th>
+                <th>Unit</th>
+                <th>Availability</th>
+                <th>Add to Cart</th>
+              </tr>
+            </thead>
+            <tbody id="price-table-body"></tbody>
+          </table>
+          <p style="font-size:12px;color:#888;margin-top:10px;">* Prices updated daily. Subject to market fluctuation.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: Cart -->
+      <div class="sidebar">
+        <div class="card cart-box">
+          <h2 class="section-title" style="font-size:16px;">🛒 Cart</h2>
+          <ul id="cart-items"><li><p class="empty-cart">No items yet</p></li></ul>
+          <div class="cart-total" id="cart-total"></div>
+          <button class="btn btn-accent btn-sm" style="width:100%;text-align:center;margin-top:12px;" onclick="showPage('order')">Proceed to Order ➜</button>
+        </div>
+
+        <div class="card" style="margin-top:16px;background:var(--green-light);border-color:#b8dfa0;">
+          <h4 style="color:var(--green-dark);margin-bottom:8px;">🌱 Seasonal Special</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.7;">We carry fresh seasonal vegetables as they arrive from local farms. Ask us about today's arrivals!</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="container">
-  <div class="main-grid" id="prices">
+<!-- ════════════════════════════════════════
+     PAGE: ORDER ONLINE
+════════════════════════════════════════ -->
+<div class="page" id="page-order">
+  <div class="container" style="padding: 28px 16px;">
+    <div class="card">
+      <h2 class="section-title">🛒 Place Your Order Online</h2>
 
-    <!-- LEFT COLUMN -->
-    <div>
-
-      <!-- ADMIN PANEL -->
-      <details class="admin-toggle">
-        <summary>🔐 Store Owner: Update Today's Prices</summary>
-        <div class="admin-form">
-          <p style="font-size:12px;color:#777;margin-bottom:12px;">Enter the price in NPR per kg. Toggle stock availability.</p>
-          <div id="admin-inputs"></div>
-          <button class="btn btn-green btn-sm" onclick="savePrices()" style="margin-top:10px;">💾 Save & Publish Prices</button>
-          <button class="btn btn-sm" style="background:#e53935;color:#fff;margin-top:10px;margin-left:8px;" onclick="resetPrices()">↺ Reset to Default</button>
-        </div>
-      </details>
-
-      <!-- PRICE TABLE -->
-      <div class="card">
-        <h2 class="section-title">📋 Today's Market Prices</h2>
-        <div class="price-date">
-          <span id="today-date">Loading...</span>
-          <span class="live-badge">LIVE</span>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Price (NPR/kg)</th>
-              <th>Unit</th>
-              <th>Availability</th>
-              <th>Add to Cart</th>
-            </tr>
-          </thead>
-          <tbody id="price-table-body"></tbody>
-        </table>
-        <p style="font-size:12px;color:#888;margin-top:10px;">* Prices updated daily. Subject to market fluctuation.</p>
+      <div class="order-summary-box">
+        <h4>🛒 Your Cart</h4>
+        <ul id="order-summary-list"><li style="color:#888;font-size:13px;">Your cart is empty. <button onclick="showPage('prices')" style="background:none;border:none;color:var(--green);font-weight:600;cursor:pointer;font-size:13px;padding:0;">Go to Today's Prices</button> to add items.</li></ul>
+        <div class="cart-total" id="order-total-display" style="margin-top:8px;"></div>
       </div>
 
-      <!-- ORDER FORM -->
-      <div class="card" id="order">
-        <h2 class="section-title">🛒 Place Your Order Online</h2>
-
-        <div class="order-summary-box" id="order-summary-box">
-          <h4>🛒 Your Cart</h4>
-          <ul id="order-summary-list"><li style="color:#888;font-size:13px;">Your cart is empty. Add items from the price table above.</li></ul>
-          <div class="cart-total" id="order-total-display" style="margin-top:8px;"></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="cust-name">Full Name *</label>
+          <input type="text" id="cust-name" placeholder="e.g. Ram Bahadur" required/>
         </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="cust-name">Full Name *</label>
-            <input type="text" id="cust-name" placeholder="e.g. Ram Bahadur" required/>
-          </div>
-          <div class="form-group">
-            <label for="cust-phone">Phone Number *</label>
-            <input type="tel" id="cust-phone" placeholder="e.g. 98XXXXXXXX" required/>
-          </div>
-          <div class="form-group full">
-            <label for="cust-address">Delivery Address *</label>
-            <input type="text" id="cust-address" placeholder="e.g. Baneshwor, Kathmandu" required/>
-          </div>
-          <div class="form-group">
-            <label for="delivery-time">Preferred Delivery Time</label>
-            <select id="delivery-time">
-              <option>Morning (7 AM – 11 AM)</option>
-              <option>Afternoon (12 PM – 3 PM)</option>
-              <option>Evening (4 PM – 7 PM)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="payment">Payment Method</label>
-            <select id="payment">
-              <option>Cash on Delivery</option>
-              <option>eSewa</option>
-              <option>Khalti</option>
-              <option>Bank Transfer</option>
-            </select>
-          </div>
-          <div class="form-group full">
-            <label for="cust-note">Special Instructions (optional)</label>
-            <textarea id="cust-note" placeholder="e.g. Please bring ripe tomatoes, leave at door..."></textarea>
-          </div>
+        <div class="form-group">
+          <label for="cust-phone">Phone Number *</label>
+          <input type="tel" id="cust-phone" placeholder="e.g. 98XXXXXXXX" required/>
         </div>
-
-        <button class="btn btn-accent" style="width:100%;margin-top:8px;font-size:16px;" onclick="placeOrder()">
-          ✅ Place Order
-        </button>
-
-        <div class="success-msg" id="success-msg">
-          <div class="checkmark">✅</div>
-          <h3 style="margin:10px 0 6px;">Order Placed Successfully!</h3>
-          <p id="success-text"></p>
-          <p style="margin-top:10px;font-size:13px;color:#555;">We'll call you at your number to confirm. Thank you for choosing Dipesh Store!</p>
+        <div class="form-group full">
+          <label for="cust-address">Delivery Address *</label>
+          <input type="text" id="cust-address" placeholder="e.g. Baneshwor, Kathmandu" required/>
+        </div>
+        <div class="form-group">
+          <label for="delivery-time">Preferred Delivery Time</label>
+          <select id="delivery-time">
+            <option>Morning (7 AM – 11 AM)</option>
+            <option>Afternoon (12 PM – 3 PM)</option>
+            <option>Evening (4 PM – 7 PM)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="payment">Payment Method</label>
+          <select id="payment">
+            <option>Cash on Delivery</option>
+            <option>eSewa</option>
+            <option>Khalti</option>
+            <option>Bank Transfer</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="cust-note">Special Instructions (optional)</label>
+          <textarea id="cust-note" placeholder="e.g. Please bring ripe tomatoes, leave at door..."></textarea>
         </div>
       </div>
 
-    </div>
+      <button class="btn btn-accent" style="width:100%;margin-top:8px;font-size:16px;" onclick="placeOrder()">
+        ✅ Place Order
+      </button>
 
-    <!-- SIDEBAR / CART -->
-    <div class="sidebar">
-      <div class="card cart-box">
-        <h2 class="section-title" style="font-size:16px;">🛒 Cart</h2>
-        <ul id="cart-items"><li><p class="empty-cart">No items yet</p></li></ul>
-        <div class="cart-total" id="cart-total"></div>
-        <a href="#order" class="btn btn-accent btn-sm" style="display:block;text-align:center;margin-top:12px;" onclick="scrollToOrder()">Proceed to Order ➜</a>
-      </div>
-
-      <!-- CONTACT CARD -->
-      <div class="card" style="margin-top:16px;" id="contact">
-        <h2 class="section-title" style="font-size:16px;">📞 Contact Us</h2>
-        <p style="font-size:14px;line-height:1.9;">
-          <strong>Store Name:</strong> Dipesh Store<br>
-          <strong>Phone:</strong> <a href="tel:9849149553" style="color:var(--green);font-weight:700;">9849149553</a><br>
-          <strong>Location:</strong> Kalimati, Kathmandu, Nepal<br>
-          <strong>Hours:</strong> 6:00 AM – 8:00 PM<br>
-          <strong>Days:</strong> Open 7 days a week
-        </p>
-        <a href="https://maps.google.com/?q=Kalimati+Kathmandu+Nepal" target="_blank" class="btn btn-green btn-sm" style="margin-top:12px;display:block;text-align:center;">
-          📍 View on Google Maps
-        </a>
-      </div>
-
-      <!-- SEASON NOTICE -->
-      <div class="card" style="margin-top:16px;background:var(--green-light);border-color:#b8dfa0;">
-        <h4 style="color:var(--green-dark);margin-bottom:8px;">🌱 Seasonal Special</h4>
-        <p style="font-size:13px;color:var(--text-light);line-height:1.7;">We carry fresh seasonal vegetables as they arrive from local farms. Ask us about today's arrivals!</p>
+      <div class="success-msg" id="success-msg">
+        <div class="checkmark">✅</div>
+        <h3 style="margin:10px 0 6px;">Order Placed Successfully!</h3>
+        <p id="success-text"></p>
+        <p style="margin-top:10px;font-size:13px;color:#555;">We'll call you at your number to confirm. Thank you for choosing Dipesh Store!</p>
       </div>
     </div>
+  </div>
+</div>
 
-  </div><!-- end main-grid -->
-
-  <!-- ABOUT -->
-  <div id="about">
-    <hr class="section-sep"/>
+<!-- ════════════════════════════════════════
+     PAGE: ABOUT US
+════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="container" style="padding: 28px 16px;">
     <h2 class="section-title">ℹ️ About Dipesh Store</h2>
+
     <div class="card">
       <p style="font-size:15px;line-height:1.9;color:var(--text-light);">
         <strong style="color:var(--text);">Dipesh Store</strong> is a trusted local agricultural food shop located in the heart of <strong>Kalimati, Kathmandu</strong> — one of Nepal's busiest fresh produce markets. We bring you the finest locally grown vegetables and agricultural products sourced fresh every morning.<br><br>
@@ -458,9 +491,138 @@
         Whether you visit us in person at Kalimati or order online, we are committed to quality and fast delivery. Call us at <strong>9849149553</strong> or place your order above!
       </p>
     </div>
-  </div>
 
-</div><!-- end container -->
+    <div class="info-cards" style="margin-top:0;">
+      <div class="info-card">
+        <div class="icon">🌾</div>
+        <h3>Farm Fresh Daily</h3>
+        <p>Produce arrives every morning directly from local farms around Kathmandu Valley.</p>
+      </div>
+      <div class="info-card">
+        <div class="icon">🤝</div>
+        <h3>Supporting Farmers</h3>
+        <p>We buy directly from farmers, giving them fair prices and you fresher produce.</p>
+      </div>
+      <div class="info-card">
+        <div class="icon">⭐</div>
+        <h3>Trusted Since Years</h3>
+        <p>Hundreds of families in Kathmandu trust Dipesh Store for their daily vegetable needs.</p>
+      </div>
+      <div class="info-card">
+        <div class="icon">🏪</div>
+        <h3>Local Business</h3>
+        <p>A proud Nepali business, serving the community from the heart of Kalimati market.</p>
+      </div>
+    </div>
+
+    <div class="card" style="background:var(--green-light);border-color:#b8dfa0;">
+      <h4 style="color:var(--green-dark);margin-bottom:10px;font-size:16px;">🥕 Our Products</h4>
+      <p style="font-size:14px;color:var(--text-light);line-height:2;">
+        Potato · Onion · Tomato · Green Chilli · Garlic · Ginger · Cauliflower · Green Peas ·
+        Spinach · Green Beans · Cabbage · Radish · and many more seasonal vegetables!
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE: CONTACT
+════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="container">
+    <div class="contact-grid">
+
+      <!-- Left: Details -->
+      <div style="padding-top:28px;">
+        <h2 class="section-title">📞 Get in Touch</h2>
+
+        <div class="card">
+          <div class="contact-detail-row">
+            <div class="contact-icon">📞</div>
+            <div>
+              <h4>Phone</h4>
+              <p><a href="tel:9849149553">9849149553</a></p>
+            </div>
+          </div>
+          <div class="contact-detail-row">
+            <div class="contact-icon">📍</div>
+            <div>
+              <h4>Location</h4>
+              <p>Kalimati, Kathmandu, Nepal</p>
+            </div>
+          </div>
+          <div class="contact-detail-row">
+            <div class="contact-icon">🕗</div>
+            <div>
+              <h4>Opening Hours</h4>
+              <p>6:00 AM – 8:00 PM <span class="open-badge">Open Daily</span></p>
+            </div>
+          </div>
+          <div class="contact-detail-row">
+            <div class="contact-icon">📅</div>
+            <div>
+              <h4>Days Open</h4>
+              <p>7 Days a Week · No Holidays</p>
+            </div>
+          </div>
+
+          <a href="https://maps.google.com/?q=Kalimati+Kathmandu+Nepal" target="_blank" class="btn btn-green btn-sm" style="margin-top:8px;display:block;text-align:center;">
+            📍 View on Google Maps
+          </a>
+        </div>
+
+        <!-- Hours breakdown -->
+        <div class="card">
+          <h3 style="color:var(--green-dark);margin-bottom:14px;font-size:15px;">⏰ Daily Schedule</h3>
+          <table class="hours-table">
+            <tr><td>Sunday</td><td>6:00 AM – 8:00 PM</td></tr>
+            <tr><td>Monday</td><td>6:00 AM – 8:00 PM</td></tr>
+            <tr><td>Tuesday</td><td>6:00 AM – 8:00 PM</td></tr>
+            <tr><td>Wednesday</td><td>6:00 AM – 8:00 PM</td></tr>
+            <tr><td>Thursday</td><td>6:00 AM – 8:00 PM</td></tr>
+            <tr><td>Friday</td><td>6:00 AM – 8:00 PM</td></tr>
+            <tr><td>Saturday</td><td>6:00 AM – 8:00 PM</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right: Map + Delivery -->
+      <div style="padding-top:28px;">
+        <h2 class="section-title">📍 Find Us</h2>
+
+        <div class="card">
+          <div class="map-placeholder">
+            <div class="map-emoji">🗺️</div>
+            <p style="font-size:15px;font-weight:600;color:var(--green-dark);">Kalimati, Kathmandu</p>
+            <p>One of Nepal's largest fresh vegetable markets.</p>
+            <a href="https://maps.google.com/?q=Kalimati+Kathmandu+Nepal" target="_blank" class="btn btn-accent btn-sm" style="margin-top:10px;">Open in Google Maps ↗</a>
+          </div>
+        </div>
+
+        <div class="card" style="background:var(--green-light);border-color:#b8dfa0;">
+          <h4 style="color:var(--green-dark);margin-bottom:10px;">🚚 Delivery Areas</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.9;">
+            We deliver across <strong>Kathmandu Valley</strong> including:<br>
+            Baneshwor · Koteshwor · Balkhu · Thamel · Lazimpat · Baluwatar ·
+            Patan · Lalitpur · Bhaktapur and surrounding areas.<br><br>
+            <strong>Call us to confirm your area: <a href="tel:9849149553" style="color:var(--green);">9849149553</a></strong>
+          </p>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--green-dark);margin-bottom:10px;">💬 Quick Order by Call</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.8;margin-bottom:14px;">
+            Prefer to order by phone? Just call us and we'll take your order directly!
+          </p>
+          <a href="tel:9849149553" class="btn btn-accent" style="display:block;text-align:center;">
+            📞 Call 9849149553
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -471,7 +633,12 @@
     </div>
     <div>
       <h4>Quick Links</h4>
-      <p><a href="#home">Home</a><br><a href="#prices">Today's Prices</a><br><a href="#order">Order Online</a><br><a href="#about">About Us</a></p>
+      <p>
+        <a onclick="showPage('home')" style="cursor:pointer;">Home</a><br>
+        <a onclick="showPage('prices')" style="cursor:pointer;">Today's Prices</a><br>
+        <a onclick="showPage('order')" style="cursor:pointer;">Order Online</a><br>
+        <a onclick="showPage('about')" style="cursor:pointer;">About Us</a>
+      </p>
     </div>
     <div>
       <h4>Our Products</h4>
@@ -493,37 +660,50 @@
 <script>
   // ── DEFAULT PRODUCTS ──
   const DEFAULT_PRODUCTS = [
-    { id:'potato',      name:'Potato',       emoji:'🥔', unit:'kg', price:40,  inStock:true },
-    { id:'onion',       name:'Onion',        emoji:'🧅', unit:'kg', price:60,  inStock:true },
-    { id:'tomato',      name:'Tomato',       emoji:'🍅', unit:'kg', price:55,  inStock:true },
-    { id:'chilli',      name:'Green Chilli', emoji:'🌶️', unit:'kg', price:90,  inStock:true },
-    { id:'garlic',      name:'Garlic',       emoji:'🧄', unit:'kg', price:200, inStock:true },
-    { id:'ginger',      name:'Ginger',       emoji:'🫚', unit:'kg', price:180, inStock:true },
-    { id:'cauliflower', name:'Cauliflower',  emoji:'🥦', unit:'pcs',price:45,  inStock:true },
-    { id:'peas',        name:'Green Peas',   emoji:'🟢', unit:'kg', price:80,  inStock:false},
-    { id:'spinach',     name:'Spinach',      emoji:'🌿', unit:'bundle',price:25,inStock:true},
-    { id:'beans',       name:'Green Beans',  emoji:'🫘', unit:'kg', price:70,  inStock:true },
-    { id:'cabbage',     name:'Cabbage',      emoji:'🥬', unit:'pcs',price:35,  inStock:true },
-    { id:'radish',      name:'Radish',       emoji:'🔴', unit:'kg', price:30,  inStock:true },
+    { id:'potato',      name:'Potato',       emoji:'🥔', unit:'kg',     price:40,  inStock:true  },
+    { id:'onion',       name:'Onion',        emoji:'🧅', unit:'kg',     price:60,  inStock:true  },
+    { id:'tomato',      name:'Tomato',       emoji:'🍅', unit:'kg',     price:55,  inStock:true  },
+    { id:'chilli',      name:'Green Chilli', emoji:'🌶️', unit:'kg',     price:90,  inStock:true  },
+    { id:'garlic',      name:'Garlic',       emoji:'🧄', unit:'kg',     price:200, inStock:true  },
+    { id:'ginger',      name:'Ginger',       emoji:'🫚', unit:'kg',     price:180, inStock:true  },
+    { id:'cauliflower', name:'Cauliflower',  emoji:'🥦', unit:'pcs',    price:45,  inStock:true  },
+    { id:'peas',        name:'Green Peas',   emoji:'🟢', unit:'kg',     price:80,  inStock:false },
+    { id:'spinach',     name:'Spinach',      emoji:'🌿', unit:'bundle', price:25,  inStock:true  },
+    { id:'beans',       name:'Green Beans',  emoji:'🫘', unit:'kg',     price:70,  inStock:true  },
+    { id:'cabbage',     name:'Cabbage',      emoji:'🥬', unit:'pcs',    price:35,  inStock:true  },
+    { id:'radish',      name:'Radish',       emoji:'🔴', unit:'kg',     price:30,  inStock:true  },
   ];
 
   // ── STATE ──
   let products = loadProducts();
   let cart = {};
 
+  // ── PAGE NAVIGATION ──
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+
+    document.getElementById('page-' + pageId).classList.add('active');
+    const navLink = document.querySelector(`nav a[data-page="${pageId}"]`);
+    if (navLink) navLink.classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Re-render order summary when navigating to order page
+    if (pageId === 'order') renderOrderSummary();
+  }
+
+  // ── LOAD / SAVE ──
   function loadProducts() {
     const stored = localStorage.getItem('dipesh_prices');
-    if (stored) {
-      try { return JSON.parse(stored); }
-      catch(e) {}
-    }
+    if (stored) { try { return JSON.parse(stored); } catch(e) {} }
     return JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
   }
 
   function savePrices() {
     products.forEach(p => {
-      const priceEl = document.getElementById('admin_price_'+p.id);
-      const stockEl = document.getElementById('admin_stock_'+p.id);
+      const priceEl = document.getElementById('admin_price_' + p.id);
+      const stockEl = document.getElementById('admin_stock_' + p.id);
       if (priceEl) p.price = parseFloat(priceEl.value) || p.price;
       if (stockEl) p.inStock = stockEl.value === 'yes';
     });
@@ -549,7 +729,7 @@
       'Updated: ' + now.toLocaleDateString('en-NP', opts);
   }
 
-  // ── RENDER ADMIN ──
+  // ── ADMIN INPUTS ──
   function renderAdminInputs() {
     const container = document.getElementById('admin-inputs');
     container.innerHTML = products.map(p => `
@@ -557,7 +737,7 @@
         <label>${p.emoji} ${p.name}</label>
         <input type="number" id="admin_price_${p.id}" value="${p.price}" min="0" step="0.5" placeholder="Price NPR"/>
         <span style="font-size:12px;color:#777;">NPR/${p.unit}</span>
-        <select id="admin_stock_${p.id}" class="admin-stock" style="padding:6px;border:1px solid #ddd;border-radius:3px;font-size:12px;">
+        <select id="admin_stock_${p.id}" style="padding:6px;border:1px solid #ddd;border-radius:3px;font-size:12px;">
           <option value="yes" ${p.inStock?'selected':''}>In Stock</option>
           <option value="no"  ${!p.inStock?'selected':''}>Out of Stock</option>
         </select>
@@ -565,7 +745,7 @@
     `).join('');
   }
 
-  // ── RENDER PRICE TABLE ──
+  // ── PRICE TABLE ──
   function renderPriceTable() {
     const tbody = document.getElementById('price-table-body');
     tbody.innerHTML = products.map(p => `
@@ -576,7 +756,8 @@
         <td class="${p.inStock ? 'stock-yes':'stock-no'}">${p.inStock ? '✔ Available':'✘ Out of Stock'}</td>
         <td>
           <div class="qty-group">
-            <input type="number" id="qty_${p.id}" value="1" min="0.5" step="0.5" style="width:54px;padding:4px 6px;border:1px solid #ddd;border-radius:3px;font-size:13px;text-align:center;"/>
+            <input type="number" id="qty_${p.id}" value="1" min="0.5" step="0.5"
+              style="width:54px;padding:4px 6px;border:1px solid #ddd;border-radius:3px;font-size:13px;text-align:center;"/>
             <button class="add-btn" onclick="addToCart('${p.id}')" ${p.inStock?'':'disabled'}>
               ${p.inStock ? '+ Add':'N/A'}
             </button>
@@ -589,7 +770,7 @@
   // ── CART ──
   function addToCart(productId) {
     const p = products.find(x => x.id === productId);
-    const qtyEl = document.getElementById('qty_'+productId);
+    const qtyEl = document.getElementById('qty_' + productId);
     const qty = parseFloat(qtyEl.value) || 1;
     if (!p || !p.inStock || qty <= 0) return;
     if (cart[productId]) {
@@ -604,6 +785,7 @@
   function removeFromCart(productId) {
     delete cart[productId];
     renderCart();
+    renderOrderSummary();
   }
 
   function renderCart() {
@@ -637,7 +819,7 @@
     const items = Object.entries(cart);
     const total = getCartTotal();
     if (items.length === 0) {
-      list.innerHTML = '<li style="color:#888;font-size:13px;">Your cart is empty. Add items from the price table above.</li>';
+      list.innerHTML = '<li style="color:#888;font-size:13px;">Your cart is empty. <button onclick="showPage(\'prices\')" style="background:none;border:none;color:var(--green);font-weight:600;cursor:pointer;font-size:13px;padding:0;">Go to Today\'s Prices</button> to add items.</li>';
       document.getElementById('order-total-display').textContent = '';
     } else {
       list.innerHTML = items.map(([id, item]) => `
@@ -654,20 +836,17 @@
     const address = document.getElementById('cust-address').value.trim();
     const items   = Object.entries(cart);
 
-    if (!name)    { showNotif('⚠️ Please enter your name.'); return; }
-    if (!phone)   { showNotif('⚠️ Please enter your phone number.'); return; }
-    if (!address) { showNotif('⚠️ Please enter your delivery address.'); return; }
+    if (!name)          { showNotif('⚠️ Please enter your name.'); return; }
+    if (!phone)         { showNotif('⚠️ Please enter your phone number.'); return; }
+    if (!address)       { showNotif('⚠️ Please enter your delivery address.'); return; }
     if (items.length === 0) { showNotif('⚠️ Your cart is empty!'); return; }
 
     const delivery = document.getElementById('delivery-time').value;
     const payment  = document.getElementById('payment').value;
     const note     = document.getElementById('cust-note').value.trim();
     const total    = getCartTotal();
+    const ref      = 'DS-' + Date.now().toString().slice(-6);
 
-    // Build order ref
-    const ref = 'DS-' + Date.now().toString().slice(-6);
-
-    // Show success
     document.getElementById('success-msg').style.display = 'block';
     document.getElementById('success-text').innerHTML =
       `<strong>Order Ref:</strong> ${ref}<br>
@@ -678,13 +857,12 @@
        <strong>Payment:</strong> ${payment}<br>
        <strong>Total:</strong> NPR ${total.toFixed(0)}`;
 
-    // Clear cart & form
     cart = {};
     renderCart();
-    document.getElementById('cust-name').value = '';
-    document.getElementById('cust-phone').value = '';
+    document.getElementById('cust-name').value    = '';
+    document.getElementById('cust-phone').value   = '';
     document.getElementById('cust-address').value = '';
-    document.getElementById('cust-note').value = '';
+    document.getElementById('cust-note').value    = '';
     document.getElementById('success-msg').scrollIntoView({ behavior:'smooth' });
   }
 
@@ -695,18 +873,6 @@
     n.classList.add('show');
     setTimeout(() => n.classList.remove('show'), 3000);
   }
-
-  function scrollToOrder() {
-    document.getElementById('order').scrollIntoView({ behavior:'smooth' });
-  }
-
-  // ── NAV ACTIVE ──
-  document.querySelectorAll('nav a').forEach(a => {
-    a.addEventListener('click', function() {
-      document.querySelectorAll('nav a').forEach(x => x.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
 
   // ── INIT ──
   setDate();
